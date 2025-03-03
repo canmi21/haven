@@ -49,8 +49,8 @@ export class AppController {
     const licenseUrl = 'https://raw.githubusercontent.com/canmi21/haven/refs/heads/main/license';
 
     try {
-      this.fetch = (await import('node-fetch')).default;
-      const response = await this.fetch(licenseUrl);
+      const { default: fetch } = await import('node-fetch');
+      const response = await fetch(licenseUrl);
       if (!response.ok) {
         throw new Error(`Failed to fetch license: ${response.statusText}`);
       }

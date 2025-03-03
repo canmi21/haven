@@ -2,6 +2,8 @@ FROM node:20-alpine
 
 WORKDIR /app
 
+ENV NODE_OPTIONS="--experimental-vm-modules --no-experimental-fetch"
+
 RUN apk add --no-cache curl bash && \
     npm install -g pnpm
 

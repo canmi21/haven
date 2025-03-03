@@ -16,16 +16,16 @@ describe('AppController', () => {
 
   describe('root', () => {
     it('should return OK and timestamp with User-Agent', () => {
-      const req = { get: jest.fn().mockReturnValue('Mozilla/5.0') };  // Mocking the User-Agent header
-      const res = { json: jest.fn() }; // Mocking the response json method
+      const req = { get: jest.fn().mockReturnValue('Mozilla/5.0') };
+      const res = { json: jest.fn() };
 
       appController.getRoot(req as any, res as any);
 
       expect(res.json).toHaveBeenCalledWith(
         expect.objectContaining({
           status: 'OK',
-          timestamp: expect.any(String),  // Expect a timestamp
-          userAgent: 'Mozilla/5.0',  // Expect the mocked User-Agent
+          timestamp: expect.any(String),
+          userAgent: 'Mozilla/5.0',
         })
       );
     });
