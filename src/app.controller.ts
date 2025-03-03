@@ -1,7 +1,6 @@
 import { Controller, Get, Res } from '@nestjs/common';
 import { uptime, cpus, totalmem, freemem } from 'os';
-import * as fs from 'fs';
-import * as path from 'path';
+import fetch from 'node-fetch';
 import { Response } from 'express';
 
 @Controller()
@@ -34,15 +33,20 @@ export class AppController {
   }
 
   @Get('license')
-  getLicense(@Res() res: Response) {
-    const licensePath = path.join(__dirname, 'license');
-    fs.readFile(licensePath, 'utf8', (err, data) => {
-      if (err) {
-        res.status(500).send('Error reading license file');
-      } else {
-        res.setHeader('Content-Type', 'text/plain');
-        res.send(data);
+  async getLicense(@Res() res: Response) {
+    const licenseUrl = 'https://raw.githubusercontent.com/canmi21/haven/refs/heads/main/license';
+  
+    try {
+      const response = await fetch(licenseUrl);
+      if (!response.ok) {
+        throw new Error(`Failed to fetch license: ${response.statusText}`);
       }
-    });
+      const data = await response.text();
+  
+      res.setHeader('Content-Type', 'text/html');
+      res.send(`<pre style="white-space: pre-wrap;">${data}</pre>`);
+    } catch (error) {
+      res.status(500).send(`<pre style="white-space: pre-wrap;">Error fetching license: ${error.message}</pre>`);
+    }
   }
 }
