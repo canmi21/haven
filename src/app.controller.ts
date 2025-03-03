@@ -1,12 +1,24 @@
-import { Controller, Get, Res } from '@nestjs/common';
+import { Controller, Get, Req, Res } from '@nestjs/common';
 import { uptime, cpus, totalmem, freemem } from 'os';
-import fetch from 'node-fetch';
-import { Response } from 'express';
+import { Request, Response } from 'express';
 
 @Controller()
 export class AppController {
   private readonly startTime = Date.now();
+  private fetch: typeof import('node-fetch').default;
 
+  @Get()
+  getRoot(@Req() req: Request, @Res() res: Response) {
+    const timestamp = new Date().toISOString();
+    const userAgent = req.get('User-Agent');
+
+    return res.json({
+      status: 'OK',
+      timestamp,
+      userAgent,
+    });
+  }
+    
   @Get('healthcheck')
   getLive() {
     return { status: 'OK', timestamp: new Date().toISOString() };
@@ -35,14 +47,15 @@ export class AppController {
   @Get('license')
   async getLicense(@Res() res: Response) {
     const licenseUrl = 'https://raw.githubusercontent.com/canmi21/haven/refs/heads/main/license';
-  
+
     try {
-      const response = await fetch(licenseUrl);
+      this.fetch = (await import('node-fetch')).default;
+      const response = await this.fetch(licenseUrl);
       if (!response.ok) {
         throw new Error(`Failed to fetch license: ${response.statusText}`);
       }
       const data = await response.text();
-  
+
       res.setHeader('Content-Type', 'text/html');
       res.send(`<pre style="white-space: pre-wrap;">${data}</pre>`);
     } catch (error) {
