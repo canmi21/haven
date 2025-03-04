@@ -1,9 +1,13 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import databaseConfig from '../config/database.config';
+import databaseConfig from '../../config/database.config';
+import { AuthModule } from '../auth/auth.module';
+import { HealthModule } from '../health/health.module';
+import { AppController } from './app.controller';
+import { AppService } from '../../app.service';
+import { ApiV1Controller } from '../modules/api/v1.controller';
+import { LicenseController } from '../modules/api/license.controller';
 
 @Module({
   imports: [
@@ -19,8 +23,10 @@ import databaseConfig from '../config/database.config';
       }),
       inject: [ConfigService],
     }),
+    AuthModule,
+    HealthModule,
   ],
-  controllers: [AppController],
+  controllers: [AppController, ApiV1Controller, LicenseController],
   providers: [AppService],
 })
 export class AppModule {}
