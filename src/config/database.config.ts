@@ -19,7 +19,7 @@ export const testMongoConnection = async () => {
 
   if (!uri || !user || !password) {
     console.error('[Mongo] Missing required environment variables.');
-    return;
+    process.exit(1);
   }
 
   const connectionPromise = mongoose.connect(uri, {
@@ -36,7 +36,7 @@ export const testMongoConnection = async () => {
     console.log('[Mongo] Connection to MongoDB successful.\n');
   } catch (error) {
     console.error('[Mongo] Connection to MongoDB failed:', error.message, '\n');
-    process.exit(1); // Exit the process with failure
+    process.exit(1);
   }
 };
 
@@ -45,7 +45,6 @@ const password = process.env.MONGO_PASSWD;
 if (password && password.length < 10) {
   console.warn('[Mongo] Warning: Please ensure your password is strong enough.');
   console.warn('[Mongo] Try using "openssl rand -base64 64" to generate a secure password.\n');
-  
   process.exit(1);
 }
 console.log('[Mongo] User:', process.env.MONGO_USER);
@@ -65,5 +64,4 @@ console.log('[Mongo] Password:', password ? `${password.slice(0, 3)}${'*'.repeat
   ],
 })
 export class AppModule {}
-
 export default databaseConfig;

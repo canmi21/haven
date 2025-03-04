@@ -1,18 +1,22 @@
+FROM node:20-alpine AS builder
+
+WORKDIR /app
+
+COPY package.json pnpm-lock.yaml ./
+RUN npm install -g pnpm && pnpm install
+
+COPY . .
+RUN pnpm run build
+
 FROM node:20-alpine
 
 WORKDIR /app
 
-ENV NODE_OPTIONS="--experimental-vm-modules --no-experimental-fetch"
+COPY --from=builder /app/dist ./dist
+COPY --from=builder /app/package.json ./
+COPY --from=builder /app/pnpm-lock.yaml ./
 
-RUN apk add --no-cache curl bash && \
-    npm install -g pnpm
-
-COPY package.json pnpm-lock.yaml ./
-RUN pnpm install --prod
-
-COPY . .
-
-RUN pnpm run build
+RUN npm install -g pnpm && pnpm install --prod
 
 CMD ["node", "dist/main.js"]
 
