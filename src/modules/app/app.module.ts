@@ -5,9 +5,7 @@ import databaseConfig from '../../config/database.config';
 import { AuthModule } from '../auth/auth.module';
 import { HealthModule } from '../health/health.module';
 import { AppController } from './app.controller';
-import { AppService } from '../../app.service';
-import { ApiV1Controller } from '../modules/api/v1.controller';
-import { LicenseController } from '../modules/api/license.controller';
+import { AppService } from './app.service';
 
 @Module({
   imports: [
@@ -26,7 +24,7 @@ import { LicenseController } from '../modules/api/license.controller';
     AuthModule,
     HealthModule,
   ],
-  controllers: [AppController, ApiV1Controller, LicenseController],
+  controllers: [AppController],
   providers: [AppService],
 })
 export class AppModule {}
