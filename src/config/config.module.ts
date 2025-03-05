@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { PortConfigService } from './port.config';
 
 @Module({
   imports: [
@@ -7,7 +8,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
       isGlobal: true,
     }),
   ],
-  providers: [ConfigService],
-  exports: [ConfigService],
+  providers: [ConfigService, PortConfigService],
+  exports: [ConfigService, PortConfigService],
 })
 export class AppConfigModule {}
