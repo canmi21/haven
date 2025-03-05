@@ -1,6 +1,7 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { PortConfigService } from './config/port.config';
+import './config/database/mongo'; 
 
 export async function bootstrap() {
   const app = await NestFactory.create(AppModule);
