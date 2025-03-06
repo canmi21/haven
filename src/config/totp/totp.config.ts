@@ -3,7 +3,7 @@ export class TotpConfig {
       const totpSecret = process.env.TOTP_SECRET;
       if (!totpSecret) {
         console.warn(`! TOTP secret is required for API authentication.`);
-        console.warn(`> Generate one here: https://api.canmi.icu/v1/auth/totp-secret?length=32\n`);
+        console.warn(`> Generate one here https://api.canmi.icu/v1/auth/totp-secret?length=32\n`);
         process.exit(1);
       }
       console.log(`> Authentication: TOTP`);
