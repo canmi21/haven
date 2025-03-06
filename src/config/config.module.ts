@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { PortConfigService } from './port.config';
+import { PortConfigService } from './port/port.config';
 
 @Module({
   imports: [
