@@ -1,11 +1,13 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Get, Query, UseGuards } from '@nestjs/common';
 import { uptime, cpus, totalmem, freemem } from 'os';
+import { TotpGuard } from '../totp/totp.guard';
 
 @Controller('v1/uptime')
 export class UptimeController {
   private readonly startTime = Date.now();
 
   @Get()
+  @UseGuards(TotpGuard)
   getUptime() {
     const osUptime = Math.floor(uptime());
     const appUptime = Math.floor((Date.now() - this.startTime) / 1000);
