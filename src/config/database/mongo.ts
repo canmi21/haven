@@ -10,12 +10,13 @@ export async function connectMongo() {
     process.exit(1);
   }
   console.log(`+ User: ${process.env.MONGO_USER}`);
-  console.log(`+ Password: ${password ? `${password.slice(0, 3)}${'*'.repeat(password.length - 3)}` : 'Not provided'}`);
+  console.log(`+ Password: ${password ? `${password.slice(0, 3)}${'*'.repeat(password.length - 3)}` : 'Not provided.'}`);
 
   const maxRetries = 3;
-  for (let attempt = 1; attempt <= maxRetries; attempt++) {
+
+  console.log(`# Connecting to MongoDB.`);
+  for (let attempt = 0; attempt < maxRetries; attempt++) {
     try {
-      console.log(`# Connecting to MongoDB (${attempt}/${maxRetries})`);
       await mongoose.connect(process.env.MONGO_URI || '', {
         user: process.env.MONGO_USER,
         pass: process.env.MONGO_PASSWD,
@@ -23,18 +24,18 @@ export async function connectMongo() {
         authSource: 'admin',
         serverSelectionTimeoutMS: 10000, 
       });
-      console.log(`+ MongoDB connection established`);
+      console.log(`+ MongoDB connection established.`);
       return;
     } catch (error) {
-      console.error(`! Failed to connect to MongoDB (${attempt}/${maxRetries})`);
+      console.error(`! Failed to connect to MongoDB.`);
       console.error(`- ${error}`);
-      if (attempt < maxRetries) {
-        console.log(`> Retrying in 5 seconds...`);
+      if (attempt < maxRetries - 1) {
+        console.log(`> Retrying in 5s (${attempt + 1}/${maxRetries})`);
         await new Promise((resolve) => setTimeout(resolve, 5000));
       }
     }
   }
 
-  console.error(`! MongoDB connection failed after ${maxRetries} attempts`);
+  console.error(`! MongoDB connection failed after ${maxRetries} attempts.\n`);
   process.exit(1);
 }
