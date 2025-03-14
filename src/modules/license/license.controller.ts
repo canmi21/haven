@@ -14,9 +14,9 @@ export class LicenseController {
       if (ip === undefined) {
         throw new Error('IP address is undefined');
       }
-      const allowed = await rateLimiter(ip, 'get-license', 5);
+
+      const allowed = await rateLimiter(ip, req.path, 5);
       if (!allowed) {
-        console.log('! Rate limit exceeded for IP:', ip);
         return res.status(StatusCode.TOO_MANY_REQUESTS).json(
           errorResponse(StatusCode.TOO_MANY_REQUESTS, 'Rate limit exceeded')
         );
