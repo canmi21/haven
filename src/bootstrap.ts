@@ -3,6 +3,7 @@ import { AppModule } from './app.module';
 import { DatabaseModule } from './config/database/database.module';
 import { TotpConfig } from './config/totp/totp.config';
 import { PortConfig } from './config/port/port.config';
+import { HttpExceptionFilter } from './utils/filter';
 
 export async function bootstrap() {
   await DatabaseModule.initialize();
@@ -14,5 +15,6 @@ export async function bootstrap() {
 
   const app = await NestFactory.create(AppModule);
   // app.setGlobalPrefix('api');
+  app.useGlobalFilters(new HttpExceptionFilter());
   await app.listen(port);
 }
