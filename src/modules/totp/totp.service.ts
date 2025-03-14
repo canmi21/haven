@@ -14,7 +14,7 @@ export class TotpService {
       secret: this.secret,
       encoding: 'base32',
       token: token,
-      window: 1,// accept 30s token
+      window: 1,// 30s
     });
   }
 }

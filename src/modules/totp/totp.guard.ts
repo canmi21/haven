@@ -11,12 +11,12 @@ export class TotpGuard implements CanActivate {
     const token = request.query.token
 
     if (!token) {
-      throw errorResponse(StatusCode.UNAUTHORIZED, { reason: 'Token is missing.' })
+      throw errorResponse(StatusCode.UNAUTHORIZED, { reason: 'Token is missing' })
     }
-
+    
     if (!this.totpService.verify(token)) {
-      throw errorResponse(StatusCode.UNAUTHORIZED, { reason: 'Invalid token.' })
-    }
+      throw errorResponse(StatusCode.UNAUTHORIZED, { reason: 'Invalid token' })
+    }    
 
     return true
   }
