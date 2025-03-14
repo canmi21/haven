@@ -1,4 +1,4 @@
-import { Injectable, CanActivate, ExecutionContext, UnauthorizedException } from '@nestjs/common';
+import { Injectable, CanActivate, ExecutionContext, HttpException } from '@nestjs/common';
 import { TotpService } from './totp.service';
 import { errorResponse, StatusCode } from '../../utils/response';
 
@@ -11,11 +11,11 @@ export class TotpGuard implements CanActivate {
     const token = request.query.token;
 
     if (!token) {
-      throw new UnauthorizedException(errorResponse(StatusCode.UNAUTHORIZED));
+      throw new HttpException(errorResponse(StatusCode.UNAUTHORIZED), StatusCode.UNAUTHORIZED);
     }
 
     if (!this.totpService.verify(token)) {
-      throw new UnauthorizedException(errorResponse(StatusCode.INVALID_CREDENTIALS));
+      throw new HttpException(errorResponse(StatusCode.INVALID_CREDENTIALS), StatusCode.INVALID_CREDENTIALS);
     }
 
     return true;

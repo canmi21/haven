@@ -1,6 +1,6 @@
 import { Controller, Get, Res } from '@nestjs/common';
 import { Response } from 'express';
-import { successResponse, errorResponse, StatusCode } from '../../utils/response';
+import { errorResponse, StatusCode } from '../../utils/response';
 
 @Controller('license')
 export class LicenseController {
@@ -15,13 +15,12 @@ export class LicenseController {
       if (!response.ok) {
         throw new Error(`Failed to fetch license: ${response.statusText}`);
       }
-      const data = await response.text();
 
-      res.status(StatusCode.SUCCESS).json(successResponse({
-        content: data,
-      }, 'License fetched successfully'));
-    } catch (error) {
+      const data = await response.text();
       
+      res.setHeader('Content-Type', 'text/html; charset=utf-8');
+      res.send(`<pre style="white-space: pre-wrap;">${data}</pre>`);
+    } catch (error) {
       res.status(StatusCode.INTERNAL_SERVER_ERROR).json(errorResponse(StatusCode.INTERNAL_SERVER_ERROR));
     }
   }
