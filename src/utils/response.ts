@@ -43,15 +43,11 @@ export function errorResponse<T extends Exclude<StatusCode, StatusCode.SUCCESS>>
   code: T,
   errors?: any
 ) {
-  const response = {
+  const response: any = {
     code,
     status: 'error',
     message: StatusMessage[code],
   };
-
-  if (errors && code !== StatusCode.NOT_FOUND) {
-    response['errors'] = errors;
-  }
 
   return response;
 }
