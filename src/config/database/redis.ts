@@ -1,15 +1,13 @@
 const { createClient } = require('redis');
 
-export const redisClient = createClient({
-  url: process.env.REDIS_URI || 'redis://localhost',
-});
-
-redisClient.on('error', (err) => {
-  console.error(`! Redis connection error: ${err}`);
-  process.exit(1);
-});
+let redisClient: ReturnType<typeof createClient> | null = null;
 
 export async function connectRedis() {
+  if (redisClient) {
+    console.log('# Redis client already connected.');
+    return redisClient;
+  }
+
   console.log(`> Redis`);
   console.log(`+ Host: ${process.env.REDIS_URI}`);
   console.log(`+ Port: ${process.env.REDIS_PORT}`);
@@ -49,5 +47,15 @@ export async function connectRedis() {
     process.exit(1);
   }
 
-  return client;
+  redisClient = client;
+  return redisClient;
 }
+
+export function getRedisClient() {
+  if (!redisClient) {
+    throw new Error('Redis client not connected.');
+  }
+  return redisClient;
+}
+
+export { redisClient };
