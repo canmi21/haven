@@ -17,7 +17,7 @@ export class StatusController {
     }
 
     try {
-      const allowed = await rateLimiter(ip, req.path, 10);
+      const allowed = await rateLimiter(ip, req.path, 3);
       if (!allowed) {
         return res.status(StatusCode.TOO_MANY_REQUESTS).json(
           errorResponse(StatusCode.TOO_MANY_REQUESTS, 'Rate limit exceeded')
