@@ -1,4 +1,4 @@
-import { Injectable, CanActivate, ExecutionContext } from '@nestjs/common'
+import { Injectable, CanActivate, ExecutionContext, UnauthorizedException } from '@nestjs/common'
 import { TotpService } from './totp.service'
 import { errorResponse, StatusCode } from '../../utils/response'
 
@@ -11,11 +11,11 @@ export class TotpGuard implements CanActivate {
     const token = request.query.token
 
     if (!token) {
-      throw errorResponse(StatusCode.UNAUTHORIZED, { reason: 'Token is missing' })
+      throw new UnauthorizedException(errorResponse(StatusCode.UNAUTHORIZED, { reason: 'Token is missing' }))
     }
     
     if (!this.totpService.verify(token)) {
-      throw errorResponse(StatusCode.UNAUTHORIZED, { reason: 'Invalid token' })
+      throw new UnauthorizedException(errorResponse(StatusCode.UNAUTHORIZED, { reason: 'Invalid token' }))
     }    
 
     return true
