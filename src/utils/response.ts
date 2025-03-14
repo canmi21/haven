@@ -3,7 +3,6 @@ export enum StatusCode {
   SUCCESS = 200,
   CREATED = 201,
   NO_CONTENT = 204,
-
   BAD_REQUEST = 400,
   UNAUTHORIZED = 401,
   FORBIDDEN = 403,
@@ -11,7 +10,7 @@ export enum StatusCode {
   CONFLICT = 409,
   UNPROCESSABLE_ENTITY = 422,
   TOO_MANY_REQUESTS = 429,
-
+  INVALID_CREDENTIALS = 498,
   INTERNAL_SERVER_ERROR = 500,
   SERVICE_UNAVAILABLE = 503,
 }
@@ -21,6 +20,7 @@ export const StatusMessage: Partial<Record<StatusCode, string>> = {
   [StatusCode.NO_CONTENT]: 'No content',
   [StatusCode.BAD_REQUEST]: 'Invalid request payload',
   [StatusCode.UNAUTHORIZED]: 'Unauthorized access',
+  [StatusCode.INVALID_CREDENTIALS]: 'Invalid or expired token',
   [StatusCode.FORBIDDEN]: 'Access forbidden',
   [StatusCode.NOT_FOUND]: 'Resource not found',
   [StatusCode.CONFLICT]: 'Data conflict detected',
