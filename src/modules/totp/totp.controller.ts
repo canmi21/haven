@@ -19,9 +19,6 @@ export class TotpController {
   @Get('verify')
   @UseGuards(TotpGuard)
   verifyTotp() {
-    return successResponse(
-      true,
-      'Verification successful, but no further actions are provided.'
-    )
+    return successResponse({ valid: true }, 'Verification successful, but no further actions are provided.')
   }
 }
