@@ -1,6 +1,8 @@
 import { Controller, Get, Query, UseGuards } from '@nestjs/common';
 import { uptime, cpus, totalmem, freemem } from 'os';
 import { TotpGuard } from '../totp/totp.guard';
+import { successResponse } from '../../utils/response';
+import { StatusCode, StatusMessage } from '../../utils/response';
 
 @Controller('v1/uptime')
 export class UptimeController {
@@ -19,11 +21,14 @@ export class UptimeController {
     const avgCpuUsage = cpuLoad.reduce((acc, val) => acc + val, 0) / cpuLoad.length;
     const memoryUsage = ((totalmem() - freemem()) / totalmem()) * 100;
 
-    return {
-      osUptime,
-      appUptime,
-      cpuUsage: Number(avgCpuUsage.toFixed(2)),
-      memoryUsage: Number(memoryUsage.toFixed(2)),
-    };
+    return successResponse(
+      {
+        osUptime,
+        appUptime,
+        cpuUsage: Number(avgCpuUsage.toFixed(2)),
+        memoryUsage: Number(memoryUsage.toFixed(2)),
+      },
+      StatusMessage[StatusCode.SUCCESS]
+    );
   }
 }
