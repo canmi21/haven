@@ -11,22 +11,17 @@ export class LicenseController {
 
     try {
       const ip = req.ip;
-      if (!ip) {
+      if (ip === undefined) {
         throw new Error('IP address is undefined');
       }
-      const key = 'get-license';
-      const limit = 5;
-      const windowMs = 60 * 1000;
-
-      console.log('> Checking rate limit...');
-      const allowed = await rateLimiter(ip, key, limit, windowMs);
+      const allowed = await rateLimiter(ip, 'get-license', 5);
       if (!allowed) {
         console.log('! Rate limit exceeded for IP:', ip);
-        return res.status(StatusCode.TOO_MANY_REQUESTS).json(errorResponse(StatusCode.TOO_MANY_REQUESTS, 'Rate limit exceeded'));
+        return res.status(StatusCode.TOO_MANY_REQUESTS).json(
+          errorResponse(StatusCode.TOO_MANY_REQUESTS, 'Rate limit exceeded')
+        );
       }
-      console.log('> Rate limit check passed.');
 
-      console.log('> Fetching license from URL...');
       const { default: fetch } = await import('node-fetch');
       const response = await fetch(licenseUrl);
 
@@ -36,12 +31,13 @@ export class LicenseController {
 
       const data = await response.text();
 
-      console.log('> License fetched successfully.');
       res.setHeader('Content-Type', 'text/html; charset=utf-8');
       res.send(`<pre style="white-space: pre-wrap;">${data}</pre>`);
     } catch (error) {
       console.error('! Error during license fetch:', error);
-      res.status(StatusCode.INTERNAL_SERVER_ERROR).json(errorResponse(StatusCode.INTERNAL_SERVER_ERROR, error.message));
+      res.status(StatusCode.INTERNAL_SERVER_ERROR).json(
+        errorResponse(StatusCode.INTERNAL_SERVER_ERROR, error.message)
+      );
     }
   }
 }
