@@ -2,7 +2,7 @@ const { createClient } = require('redis');
 
 export async function connectRedis() {
   console.log(`> Redis`);
-  console.log(`+ URI: ${process.env.REDIS_URI}`);
+  console.log(`+ Host: ${process.env.REDIS_URI}`);
   console.log(`+ Port: ${process.env.REDIS_PORT}`);
 
   const password = process.env.REDIS_PASSWD;
@@ -14,10 +14,16 @@ export async function connectRedis() {
 
   console.log(`+ Password: ${password ? `${password.slice(0, 3)}${'*'.repeat(password.length - 3)}` : 'Not provided.'}`);
 
-  const client = createClient({
-    url: `redis://${process.env.REDIS_URI}:${process.env.REDIS_PORT}`,
-    password: process.env.REDIS_PASSWD || undefined,
-  });
+  let redisHost = process.env.REDIS_URI || 'localhost';
+  let redisPort = process.env.REDIS_PORT || '6379';
+
+  redisHost = redisHost.replace(/^redis:\/\//, '');
+
+  const redisURL = password
+    ? `redis://:${encodeURIComponent(password)}@${redisHost}:${redisPort}`
+    : `redis://${redisHost}:${redisPort}`;
+
+  const client = createClient({ url: redisURL });
 
   client.on('error', (err) => {
     console.error(`! Redis connection error: ${err}`);
@@ -27,9 +33,9 @@ export async function connectRedis() {
   try {
     console.log(`# Connecting to Redis.`);
     await client.connect();
-    console.log(`+ Redis connection established.`);
+    console.log(`+ Redis connection established.\n`);
   } catch (error) {
-    console.error(`! Failed to connect to Redis.`);
+    console.error(`! Failed to connect to Redis.\n`);
     console.error(`- ${error}`);
     process.exit(1);
   }

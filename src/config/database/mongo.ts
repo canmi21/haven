@@ -24,7 +24,7 @@ export async function connectMongo() {
         authSource: 'admin',
         serverSelectionTimeoutMS: 10000, 
       });
-      console.log(`+ MongoDB connection established.`);
+      console.log(`+ MongoDB connection established.\n`);
       return;
     } catch (error) {
       console.error(`! Failed to connect to MongoDB.`);
