@@ -1,0 +1,44 @@
+version: '3.8'
+
+services:
+  redis:
+    image: redis:latest
+    container_name: redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    env_file:
+      - .env
+    command: ["redis-server", "--requirepass", "${REDIS_PASSWD}"]
+
+  mongo:
+    image: mongo:latest
+    container_name: mongo
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: "${MONGO_USER}"
+      MONGO_INITDB_ROOT_PASSWORD: "${MONGO_PASSWD}"
+    command: ["mongod", "--auth"]
+    volumes:
+      - mongo_data:/data/db
+
+  haven:
+    image: canmi/haven
+    container_name: haven
+    restart: unless-stopped
+    ports:
+      - "33321:33321"
+    network_mode: "host"
+    env_file:
+      - .env
+    depends_on:
+      - redis
+      - mongo
+
+volumes:
+  redis_data:
+  mongo_data:
