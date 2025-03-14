@@ -28,8 +28,7 @@ export const StatusMessage: Partial<Record<StatusCode, string>> = {
   [StatusCode.TOO_MANY_REQUESTS]: 'Too many requests',
   [StatusCode.INTERNAL_SERVER_ERROR]: 'Internal server error',
   [StatusCode.SERVICE_UNAVAILABLE]: 'Service is temporarily unavailable',
-}
-
+};
 
 export function successResponse(data: any, message?: string, code = StatusCode.SUCCESS) {
   return {
@@ -37,17 +36,22 @@ export function successResponse(data: any, message?: string, code = StatusCode.S
     status: 'success',
     ...(message ? { message } : {}),
     data,
-  }
+  };
 }
 
 export function errorResponse<T extends Exclude<StatusCode, StatusCode.SUCCESS>>(
   code: T,
   errors?: any
 ) {
-  return {
+  const response = {
     code,
     status: 'error',
     message: StatusMessage[code],
-    ...(errors ? { errors } : {}),
+  };
+
+  if (errors && code !== StatusCode.NOT_FOUND) {
+    response['errors'] = errors;
   }
+
+  return response;
 }
