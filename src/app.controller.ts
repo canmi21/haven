@@ -1,9 +1,9 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Get, NotFoundException } from '@nestjs/common';
 
 @Controller()
 export class AppController {
   @Get()
   getRoot() {
-    return { message: 'Welcome to the API!' };
+    throw new NotFoundException();
   }
 }
