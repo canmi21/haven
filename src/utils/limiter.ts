@@ -1,10 +1,11 @@
-import { redisClient } from '../config/database/redis';
+import { redisClient, connectRedis } from '../config/database/redis';
 
 export async function rateLimiter(key: string, limit: number, windowMs: number) {
   try {
-    console.log('> Connecting to Redis...');
-    await redisClient.connect();
-    console.log('> Redis connected successfully.');
+    if (!redisClient) {
+      await connectRedis();
+    }
+    console.log('> Redis client connected or reused.');
 
     const currentCount = await redisClient.get(key);
 
@@ -17,8 +18,5 @@ export async function rateLimiter(key: string, limit: number, windowMs: number) 
   } catch (error) {
     console.error('! Redis error:', error);
     throw error;
-  } finally {
-    // Ensure the Redis client stays open
-    // Avoid closing the client here if it is used elsewhere in the app
   }
 }
