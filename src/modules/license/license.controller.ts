@@ -1,14 +1,21 @@
-import { Controller, Get, Res } from '@nestjs/common';
+import { Controller, Get, Res, Request } from '@nestjs/common';
 import { Response } from 'express';
 import { errorResponse, StatusCode } from '../../utils/response';
+import { rateLimiter } from '../../utils/limiter';
 
 @Controller('license')
 export class LicenseController {
   @Get()
-  async getLicense(@Res() res: Response) {
+  async getLicense(@Res() res: Response, @Request() req) {
     const licenseUrl = 'https://raw.githubusercontent.com/canmi21/haven/refs/heads/main/license';
 
     try {
+      const key = `get-license:${req.ip}`;
+      const limit = 5;
+      const windowMs = 60 * 1000;
+
+      await rateLimiter(key, limit, windowMs);
+
       const { default: fetch } = await import('node-fetch');
       const response = await fetch(licenseUrl);
       
