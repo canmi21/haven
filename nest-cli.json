@@ -6,6 +6,9 @@
     "deleteOutDir": true
   },
   "assets": [
-    { "include": "modules/feed/subscription/*.yaml", "outDir": "dist" }
+    {
+      "include": "src/modules/feed/subscription/subscriptions.yaml",
+      "outDir": "dist/modules/feed/subscription"
+    }
   ]
 }

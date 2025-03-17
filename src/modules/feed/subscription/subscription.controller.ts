@@ -5,7 +5,13 @@ import * as path from 'path';
 
 @Controller('v1/feeds/subscription')
 export class SubscriptionController {
-  private readonly configPath = path.join(__dirname, 'subscriptions.yaml');
+  private readonly configPath: string;
+
+  constructor() {
+    this.configPath = process.env.NODE_ENV === 'production'
+      ? path.resolve(process.cwd(), 'dist/modules/feed/subscription/subscriptions.yaml')
+      : path.resolve(process.cwd(), 'src/modules/feed/subscription/subscriptions.yaml');
+  }
 
   @Get()
   async getSubscription(@Res() res: Response) {
