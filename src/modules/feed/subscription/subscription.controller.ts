@@ -252,4 +252,58 @@ export class SubscriptionController {
       );
     }
   }
+  @Get('token')
+  @UseGuards(TotpGuard)
+  async getUserToken(
+    @Query('id') id: string,
+    @Query('user') username: string,
+    @Res() res: Response
+  ) {
+    try {
+      const ip = res.req.ip;
+      if (!ip) {
+        return res.status(StatusCode.BAD_REQUEST).json(
+          errorResponse(StatusCode.BAD_REQUEST, 'IP address is undefined')
+        );
+      }
+
+      const allowed = await rateLimiter(ip, res.req.path, 5, 1);
+      if (!allowed) {
+        return res.status(StatusCode.TOO_MANY_REQUESTS).json(
+          errorResponse(StatusCode.TOO_MANY_REQUESTS, 'Rate limit exceeded')
+        );
+      }
+
+      // Must provide id or user argument
+      if (!id && !username) {
+        return res.status(StatusCode.BAD_REQUEST).json(
+          errorResponse(StatusCode.BAD_REQUEST, 'Either id or user must be provided')
+        );
+      }
+
+      // Find user
+      let user;
+      if (id) {
+        user = await User.findOne({ id });
+      } else {
+        user = await User.findOne({ username });
+      }
+
+      if (!user) {
+        return res.status(StatusCode.NOT_FOUND).json(
+          errorResponse(StatusCode.NOT_FOUND, 'User not found')
+        );
+      }
+
+      // UUID token
+      return res.json(
+        successResponse({ token: user.token }, 'User token retrieved successfully')
+      );
+    } catch (error) {
+      console.error('! Error in getUserToken:', error);
+      return res.status(StatusCode.INTERNAL_SERVER_ERROR).json(
+        errorResponse(StatusCode.INTERNAL_SERVER_ERROR, 'Failed to retrieve user token')
+      );
+    }
+  }
 }
