@@ -1,21 +1,12 @@
 import { Controller, Get, Res } from '@nestjs/common';
 import { Response } from 'express';
-import * as fs from 'fs';
-import * as path from 'path';
+import * as yaml from 'js-yaml';
 import { errorResponse, StatusCode } from '../../../utils/response';
 import { rateLimiter } from '../../../utils/limiter';
+import { config } from './subscriptions';
 
 @Controller('v1/feeds/subscription')
 export class SubscriptionController {
-  private readonly configPath: string;
-
-  constructor() {
-
-    this.configPath = process.env.NODE_ENV === 'production'
-      ? path.resolve(process.cwd(), 'dist/modules/feed/subscription/subscriptions.yaml')
-      : path.resolve(process.cwd(), 'src/modules/feed/subscription/subscriptions.yaml');
-  }
-
   @Get()
   async getSubscription(@Res() res: Response) {
     try {
@@ -31,14 +22,14 @@ export class SubscriptionController {
         );
       }
 
-      const data = fs.readFileSync(this.configPath, 'utf-8');
+      const yamlData = yaml.dump(config);
       res.setHeader('Content-Type', 'text/yaml');
-      return res.send(data);
+      return res.send(yamlData);
     } catch (error) {
       console.error('! Error in getSubscription:', error);
 
       return res.status(StatusCode.INTERNAL_SERVER_ERROR).json(
-        errorResponse(StatusCode.INTERNAL_SERVER_ERROR, 'Failed to load subscription file')
+        errorResponse(StatusCode.INTERNAL_SERVER_ERROR, 'Failed to load subscription data')
       );
     }
   }
