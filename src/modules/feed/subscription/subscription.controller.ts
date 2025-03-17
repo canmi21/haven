@@ -3,7 +3,7 @@ import { Response } from 'express';
 import * as fs from 'fs';
 import * as path from 'path';
 
-@Controller('api/v1/feeds/subscription')
+@Controller('v1/feeds/subscription')
 export class SubscriptionController {
   private readonly configPath = path.join(__dirname, 'subscriptions.yaml');
 
