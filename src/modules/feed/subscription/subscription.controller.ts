@@ -24,7 +24,7 @@ export class SubscriptionController {
         return res.status(StatusCode.BAD_REQUEST).json(errorResponse(StatusCode.BAD_REQUEST, 'IP address is undefined'));
       }
 
-      const allowed = await rateLimiter(ip, res.req.path, 10);
+      const allowed = await rateLimiter(ip, res.req.path, 10, 1);
       if (!allowed) {
         return res.status(StatusCode.TOO_MANY_REQUESTS).json(
           errorResponse(StatusCode.TOO_MANY_REQUESTS, 'Rate limit exceeded')
