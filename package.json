@@ -6,7 +6,7 @@
   "private": true,
   "license": "MIT",
   "scripts": {
-    "build": "nest build && cp src/modules/feed/subscription/subscriptions.yaml dist/modules/feed/subscription/",
+    "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "nest start",
     "start:dev": "nest start --watch",
@@ -29,6 +29,7 @@
     "dotenv": "^16.4.7",
     "figlet": "^1.8.0",
     "geoip-lite": "^1.4.10",
+    "js-yaml": "^4.1.0",
     "mongoose": "^8.12.0",
     "node-fetch": "^2.6.7",
     "otplib": "^12.0.1",
