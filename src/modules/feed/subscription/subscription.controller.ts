@@ -12,7 +12,7 @@ import { config } from './subscriptions';
 export class SubscriptionController {
   /**
    * Register user with TOTP
-   * Path: /v1/feeds/subscription/register?user=xxx&expire=30&quota=30&token=123456
+   * Path: /v1/feeds/subscription/register?user=xxx&expire=30"a=30&token=123456
    */
   @Get('register')
   @UseGuards(TotpGuard)
@@ -96,7 +96,7 @@ export class SubscriptionController {
 
   /**
    * Update user with TOTP
-   * Path: /v1/feeds/subscription/update?user=xxx&expire=30&quota=30&token=123456
+   * Path: /v1/feeds/subscription/update?user=xxx&expire=30"a=30&token=123456
    */
   @Get('update')
   @UseGuards(TotpGuard)
@@ -433,6 +433,72 @@ export class SubscriptionController {
       console.error('! Error in getUserInfo:', error);
       return res.status(StatusCode.INTERNAL_SERVER_ERROR).json(
         errorResponse(StatusCode.INTERNAL_SERVER_ERROR, 'Failed to retrieve user info')
+      );
+    }
+  }
+
+  /**
+   * Update user token without TOTP
+   * Path: /v1/feeds/subscription/user/token/update?user=xxx&token=new-token
+   *       or /v1/feeds/subscription/user/token/update?id=001&token=new-token
+   */
+  @Get('user/token/update')
+  async updateUserToken(
+    @Query('user') username: string,
+    @Query('id') id: string,
+    @Query('token') newToken: string,
+    @Res() res: Response
+  ) {
+    try {
+      const ip = res.req.ip;
+      if (!ip) {
+        return res.status(StatusCode.BAD_REQUEST).json(
+          errorResponse(StatusCode.BAD_REQUEST, 'IP address is undefined')
+        );
+      }
+
+      const allowed = await rateLimiter(ip, res.req.path, 5, 1);
+      if (!allowed) {
+        return res.status(StatusCode.TOO_MANY_REQUESTS).json(
+          errorResponse(StatusCode.TOO_MANY_REQUESTS, 'Rate limit exceeded')
+        );
+      }
+
+      if (!username && !id) {
+        return res.status(StatusCode.BAD_REQUEST).json(
+          errorResponse(StatusCode.BAD_REQUEST, 'Either user or id must be provided')
+        );
+      }
+
+      if (!newToken) {
+        return res.status(StatusCode.BAD_REQUEST).json(
+          errorResponse(StatusCode.BAD_REQUEST, 'New token is required')
+        );
+      }
+
+      let user;
+      if (id) {
+        user = await User.findOne({ id });
+      } else {
+        user = await User.findOne({ username });
+      }
+
+      if (!user) {
+        return res.status(StatusCode.NOT_FOUND).json(
+          errorResponse(StatusCode.NOT_FOUND, 'User not found')
+        );
+      }
+
+      user.token = newToken;
+      await user.save();
+
+      console.log(`+ Updated token for user: ${user.username}`);
+
+      return res.json(successResponse({}, 'User token updated successfully'));
+    } catch (error) {
+      console.error('! Error in updateUserToken:', error);
+      return res.status(StatusCode.INTERNAL_SERVER_ERROR).json(
+        errorResponse(StatusCode.INTERNAL_SERVER_ERROR, 'Failed to update user token')
       );
     }
   }
